@@ -1,0 +1,1 @@
+dotnet publish ./src/DeckParser.csproj -r win10-x64  -p:PublishSingleFile=true -o "dist" -c Release
