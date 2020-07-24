@@ -21,28 +21,29 @@ namespace DeckParser
                 client.BaseAddress = new Uri("https://api.scryfall.com/");
             });
             collection.AddSingleton<CardParser>();
+            collection.AddSingleton<Options>();
+            collection.AddSingleton<DeckCreator>();
 
             var services = collection.BuildServiceProvider();
 
-            var client = services.GetService<ScryfallApiClient>();
+            var options = services.GetService<Options>();
+
+            await options.Expand();
 
             var path = Directory.GetCurrentDirectory();
 
             var decks = ParseDecks("DelverLensDecks", new DelverLensParser(), path)
                 .Concat(ParseDecks("TappedOutDecks", new TappedOutParser(), path));
-
-            //var resultPath = Path.Combine(path, "deckfiles");
-            var resultPath = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\Documents\My Games\Tabletop Simulator\Saves\Saved Objects\Imported");
-            Directory.CreateDirectory(resultPath);
             
             var parser = services.GetService<CardParser>();
+            var deckCreator = services.GetService<DeckCreator>();
 
             foreach (var deck in decks)
             {
                 // Parse and sort using scryfall
                 var cards = await parser.Parse(deck.Cards);
 
-                DeckCreator.SaveDeckFiles(resultPath, deck, cards);
+                deckCreator.SaveDeckFiles(deck, cards);
             }
         }
 

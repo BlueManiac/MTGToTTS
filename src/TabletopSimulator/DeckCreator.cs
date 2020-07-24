@@ -2,14 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using DeckParser.Models;
 using Newtonsoft.Json;
 
 namespace DeckParser.TabletopSimulator {
     public class DeckCreator {
-        private static readonly string BACK_URL = "https://s3.amazonaws.com/frogtown.cards.hq/CardBack.jpg";
+        private readonly Options options;
 
-        public static void SaveDeckFiles(string path, Deck deck, IEnumerable<ScryfallApi.Client.Models.Card> cards) {
+        public DeckCreator(Options options)
+        {
+            this.options = options;
+        }
+
+        public void SaveDeckFiles(Deck deck, IEnumerable<ScryfallApi.Client.Models.Card> cards)
+        {
+            Directory.CreateDirectory(options.ResultPath);
 
             var state = new SaveState {
                 ObjectStates = new System.Collections.Generic.List<ObjectState>() {
@@ -40,7 +48,7 @@ namespace DeckParser.TabletopSimulator {
                     : card.ImageUris["border_crop"].ToString();
 
                 for (int i = 0; i < quantity; i++) {
-                    AddCard(id, $"{card.Name} ({card.TypeLine})", faceUrl, BACK_URL, true);
+                    AddCard(id, $"{card.Name} ({card.TypeLine})", faceUrl, options.BackUrl, true);
                     
                     id += 100;
                 }
@@ -62,7 +70,7 @@ namespace DeckParser.TabletopSimulator {
                 NullValueHandling = NullValueHandling.Ignore
             });
 
-            File.WriteAllText(Path.Combine(path, deck.Name) + ".json", json);
+            File.WriteAllText(Path.Combine(options.ResultPath, deck.Name) + ".json", json);
 
             void AddCard(int id, string nickName, string faceUrl, string backUrl, bool backIsHidden) {
                 objects.Add(new ObjectState {
