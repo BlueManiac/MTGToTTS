@@ -15,7 +15,7 @@ namespace DeckParser.TabletopSimulator {
             this.options = options;
         }
 
-        public void SaveDeckFiles(Deck deck, IEnumerable<ScryfallApi.Client.Models.Card> cards)
+        public string SaveDeckFile(Deck deck, IEnumerable<ScryfallApi.Client.Models.Card> cards)
         {
             Directory.CreateDirectory(options.ResultPath);
 
@@ -70,7 +70,10 @@ namespace DeckParser.TabletopSimulator {
                 NullValueHandling = NullValueHandling.Ignore
             });
 
-            File.WriteAllText(Path.Combine(options.ResultPath, deck.Name) + ".json", json);
+            var filePath = Path.Combine(options.ResultPath, deck.Name) + ".json";
+            File.WriteAllText(filePath, json);
+
+            return filePath;
 
             void AddCard(int id, string nickName, string faceUrl, string backUrl, bool backIsHidden) {
                 objects.Add(new ObjectState {

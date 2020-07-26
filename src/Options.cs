@@ -7,6 +7,7 @@ namespace DeckParser
     {
         public string BackUrl { get; set; } = "https://loremflickr.com/480/680";
         public string ResultPath { get; set; } = @"%USERPROFILE%\Documents\My Games\Tabletop Simulator\Saves\Saved Objects\Imported";
+        public string FilePath { get; set; }
 
         public async Task Expand() {
             BackUrl = await WebUtil.ExpandUrl(BackUrl);

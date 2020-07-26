@@ -16,12 +16,17 @@ namespace DeckParser
         static async Task Main(string[] args)
         {
             var collection = new ServiceCollection();
+
             collection.AddHttpClient<ScryfallApiClient>(client =>
             {
                 client.BaseAddress = new Uri("https://api.scryfall.com/");
             });
             collection.AddSingleton<CardParser>();
-            collection.AddSingleton<Options>();
+            collection.AddSingleton(x => new Options {
+                FilePath = args.Length > 0
+                    ? args[0]
+                    : null
+            });
             collection.AddSingleton<DeckCreator>();
 
             var services = collection.BuildServiceProvider();
@@ -30,29 +35,57 @@ namespace DeckParser
 
             await options.Expand();
 
-            var path = Directory.GetCurrentDirectory();
+            var filePaths = options.FilePath != null
+                ? Enumerable.Empty<string>().Append(options.FilePath)
+                : GetFilePaths("DelverLensDecks");
 
-            var decks = ParseDecks("DelverLensDecks", new DelverLensParser(), path)
-                .Concat(ParseDecks("TappedOutDecks", new TappedOutParser(), path));
+            var decks = ParseDecks(new DelverLensParser(), filePaths);
             
             var parser = services.GetService<CardParser>();
             var deckCreator = services.GetService<DeckCreator>();
 
             foreach (var deck in decks)
             {
-                // Parse and sort using scryfall
-                var cards = await parser.Parse(deck.Cards);
+                Console.Write("Parsing {0}... ", deck.Name);
 
-                deckCreator.SaveDeckFiles(deck, cards);
+                try {
+                    // Parse and sort using scryfall
+                    var cards = await parser.Parse(deck.Cards);
+
+                    // Save TTS deck file
+                    var filePath = deckCreator.SaveDeckFile(deck, cards);
+                    
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("OK");
+                    Console.ResetColor();
+                    Console.WriteLine("Deck was saved to {0}.", filePath);
+                }
+                catch (Exception ex) {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Error.WriteLine("ERROR");
+                    Console.Error.WriteLine(ex);
+                    Console.ResetColor();
+                }
             }
+
+            Console.WriteLine();
+            Console.Write("Press any key to continue...");
+            Console.ReadKey();
         }
 
-        private static IEnumerable<Deck> ParseDecks(string folder, IDeckFileParser parser, string path)
-        {
+        public static IEnumerable<string> GetFilePaths(string folder, string path = null) {
+            path = path ?? Directory.GetCurrentDirectory();
+
             Directory.CreateDirectory(Path.Combine(path, folder));
 
-            return Directory.GetFiles(folder)
-                .Select(x => Path.Combine(path, x))
+            return Directory
+                .GetFiles(folder)
+                .Select(x => Path.Combine(path, x));
+        }
+
+        private static IEnumerable<Deck> ParseDecks(IDeckFileParser parser, IEnumerable<string> filePaths)
+        {
+            return filePaths
                 .Select(filePath => new Deck
                 {
                     FilePath = filePath,
