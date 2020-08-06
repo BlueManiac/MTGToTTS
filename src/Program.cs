@@ -17,16 +17,18 @@ namespace DeckParser
         {
             var collection = new ServiceCollection();
 
-            collection.AddHttpClient<ScryfallApiClient>(client =>
-            {
-                client.BaseAddress = new Uri("https://api.scryfall.com/");
-            });
-            collection.AddSingleton<CardParser>();
             collection.AddSingleton(x => new Options {
                 FilePath = args.Length > 0
                     ? args[0]
                     : null
             });
+            collection.AddHttpClient<ScryfallApiClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://api.scryfall.com/");
+            });
+
+            collection.AddSingleton<DelverLensParser>();
+            collection.AddSingleton<CardParser>();
             collection.AddSingleton<DeckCreator>();
 
             var services = collection.BuildServiceProvider();
@@ -34,35 +36,37 @@ namespace DeckParser
             var options = services.GetService<Options>();
 
             await options.Expand();
-
-            var filePaths = options.FilePath != null
-                ? Enumerable.Empty<string>().Append(options.FilePath)
-                : GetFilePaths("DelverLensDecks");
-
-            var decks = ParseDecks(new DelverLensParser(), filePaths);
             
-            var parser = services.GetService<CardParser>();
+            var parser = services.GetService<DelverLensParser>();
+            var cardParser = services.GetService<CardParser>();
             var deckCreator = services.GetService<DeckCreator>();
 
-            foreach (var deck in decks)
+            foreach (var filePath in options.FilePaths)
             {
-                Console.Write("Parsing {0}... ", deck.Name);
-
                 try {
+                    var deck = new Deck {
+                        FilePath = filePath,
+                        Cards = parser.Parse(filePath),
+                        Name = Path.GetFileNameWithoutExtension(filePath)
+                    };
+
+                    Console.Write("Parsing {0}... ", deck.Name);
+                    
                     // Parse and sort using scryfall
-                    var cards = await parser.Parse(deck.Cards);
+                    var cards = await cardParser.Parse(deck.Cards);
 
                     // Save TTS deck file
-                    var filePath = deckCreator.SaveDeckFile(deck, cards);
+                    var resultFilePath = deckCreator.SaveDeckFile(deck, cards);
                     
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("OK");
                     Console.ResetColor();
-                    Console.WriteLine("Deck was saved to {0}.", filePath);
+                    Console.WriteLine("Deck was saved to {0}.", resultFilePath);
                 }
                 catch (Exception ex) {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.Error.WriteLine("ERROR");
+                    Console.WriteLine("Could not parse {0}.", filePath);
                     Console.Error.WriteLine(ex);
                     Console.ResetColor();
                 }
@@ -71,27 +75,6 @@ namespace DeckParser
             Console.WriteLine();
             Console.Write("Press any key to continue...");
             Console.ReadKey();
-        }
-
-        public static IEnumerable<string> GetFilePaths(string folder, string path = null) {
-            path = path ?? Directory.GetCurrentDirectory();
-
-            Directory.CreateDirectory(Path.Combine(path, folder));
-
-            return Directory
-                .GetFiles(folder)
-                .Select(x => Path.Combine(path, x));
-        }
-
-        private static IEnumerable<Deck> ParseDecks(IDeckFileParser parser, IEnumerable<string> filePaths)
-        {
-            return filePaths
-                .Select(filePath => new Deck
-                {
-                    FilePath = filePath,
-                    Cards = parser.Parse(filePath),
-                    Name = Path.GetFileNameWithoutExtension(filePath)
-                });
         }
     }
 }
