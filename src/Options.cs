@@ -10,9 +10,9 @@ namespace DeckParser
     {
         public string BackUrl { get; set; } = "https://loremflickr.com/480/680";
         public string ResultPath { get; set; } = @"%USERPROFILE%\Documents\My Games\Tabletop Simulator\Saves\Saved Objects\Imported";
-        public string FilePath { get; set; }
-        public IEnumerable<string> FilePaths { get; private set; }
-        public string DelverLensFolder { get; set; } = "DelverLensDecks";
+        internal string FilePath { get; set; }
+        internal IEnumerable<string> FilePaths {  get; private set; }
+        internal string DelverLensFolder { get; set; } = "DelverLensDecks";
 
         public async Task Expand() {
             BackUrl = await WebUtil.ExpandUrl(BackUrl);
