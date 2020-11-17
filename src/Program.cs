@@ -21,15 +21,11 @@ namespace DeckParser
     {
         static async Task Main(string[] args)
         {
-            var basePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-
             var host = Host.CreateDefaultBuilder(args)
-                .UseContentRoot(basePath)
                 .ConfigureLogging(config => {
                     config.ClearProviders();
                 })
                 .ConfigureHostConfiguration(x => {
-                    x.SetBasePath(basePath);
                     x.AddJsonFile("DeckParser.json", optional: true);
                 })
                 .ConfigureServices((context, collection) => {
@@ -49,7 +45,7 @@ namespace DeckParser
                 .Build();
 
             var options = host.Services.GetService<Options>();
-            var optionsFilePath = Path.Combine(basePath, "DeckParser.json");
+            var optionsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "DeckParser.json");
 
             if (!File.Exists(optionsFilePath)) {
                 var json = JsonConvert.SerializeObject(options, new JsonSerializerSettings { Formatting = Formatting.Indented});
