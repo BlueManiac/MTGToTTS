@@ -6,4 +6,5 @@ dotnet publish ./src/DeckParser.csproj `
 	-p:PublishSingleFile=true `
 	-p:PublishTrimmed=true `
 	-p:IncludeNativeLibrariesForSelfExtract=true `
-	-p:DebugType=embedded
+	-p:DebugType=embedded `
+	-p:TrimMode=Link
