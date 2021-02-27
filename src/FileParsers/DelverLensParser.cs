@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using CsvHelper;
 using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
 
 namespace DeckParser.FileParsers
 {
@@ -29,9 +30,15 @@ namespace DeckParser.FileParsers
         {
             public Map()
             {
-                Map(m => m.Name);
-                Map(m => m.Quantity).ConvertUsing(row => int.Parse(row.GetField("QuantityX").Replace("x", "")));
-                Map(m => m.ScryfallId).ConvertUsing(row => row.GetField("Scryfall ID"));
+                Map(m => m.Name).Name("name", "Name");
+                Map(m => m.Quantity).Name("QuantityX", "count").TypeConverter<QuantityConverter>();
+                Map(m => m.ScryfallId).Name("Scryfall ID", "scryfall_id");
+            }
+        }
+
+        private class QuantityConverter : TypeConverter {
+            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData) {
+                return int.Parse(text.Replace("x", ""));
             }
         }
     }
