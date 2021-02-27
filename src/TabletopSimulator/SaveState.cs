@@ -27,9 +27,9 @@ namespace DeckParser.TabletopSimulator {
         public int rotY { get; set; }
         public int rotZ { get; set; }
 
-        public int scaleX { get; set; }
-        public int scaleY { get; set; }
-        public int scaleZ { get; set; }
+        public float scaleX { get; set; }
+        public float scaleY { get; set; }
+        public float scaleZ { get; set; }
     }
 
     public class CustomDeckState

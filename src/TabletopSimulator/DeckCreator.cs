@@ -26,9 +26,9 @@ namespace DeckParser.TabletopSimulator {
                         Nickname = deck.Name,
                         Transform = new TransformState {
                             rotY = 180,
-                            scaleX = 1,
+                            scaleX = 1.645f,
                             scaleY = 1,
-                            scaleZ = 1
+                            scaleZ = 1.645f
                         }
                     }
                 }
