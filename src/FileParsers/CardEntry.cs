@@ -5,5 +5,6 @@ namespace DeckParser.FileParsers
         public int Quantity { get; set; }
         public string Name { get; set; }
         public string ScryfallId { get; set; }
+        public bool Exclude { get; set; }
     }
 }

@@ -71,7 +71,7 @@ namespace DeckParser
                     Console.Write("Parsing {0}... ", deck.Name);
                     
                     // Parse and sort using scryfall
-                    var cards = await cardParser.Parse(deck.Cards);
+                    var cards = await cardParser.Parse(deck.Cards.Where(x => !x.Exclude));
 
                     // Save TTS deck file
                     var resultFilePath = deckCreator.SaveDeckFile(deck, cards);
