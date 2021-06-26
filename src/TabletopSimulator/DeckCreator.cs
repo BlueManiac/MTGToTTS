@@ -1,10 +1,14 @@
+using System.Text;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using DeckParser.Models;
-using Newtonsoft.Json;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 namespace DeckParser.TabletopSimulator {
     public class DeckCreator {
@@ -65,9 +69,10 @@ namespace DeckParser.TabletopSimulator {
                 id += 100;
             }
 
-            var json = JsonConvert.SerializeObject(state, Formatting.Indented, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
+            var json = JsonSerializer.Serialize(state, new JsonSerializerOptions {
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
             });
 
             var filePath = Path.Combine(options.ResultPath, deck.Name) + ".json";

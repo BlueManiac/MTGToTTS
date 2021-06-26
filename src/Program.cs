@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DeckParser.FileParsers;
 using DeckParser.Models;
@@ -12,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using ScryfallApi.Client;
 
 namespace DeckParser
@@ -48,7 +48,9 @@ namespace DeckParser
             var optionsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "DeckParser.json");
 
             if (!File.Exists(optionsFilePath)) {
-                var json = JsonConvert.SerializeObject(options, new JsonSerializerSettings { Formatting = Formatting.Indented});
+                var json = JsonSerializer.Serialize(options, new JsonSerializerOptions {
+                    WriteIndented = true,
+                });
 
                 await File.WriteAllTextAsync(optionsFilePath, json);
             }
