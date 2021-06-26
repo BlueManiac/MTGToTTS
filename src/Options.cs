@@ -11,6 +11,7 @@ namespace DeckParser
         public string BackUrl { get; set; } = "https://loremflickr.com/480/680";
         public string ResultPath { get; set; } = @"%USERPROFILE%\Documents\My Games\Tabletop Simulator\Saves\Saved Objects\Imported";
         public string ImportPath { get; set; } = "Decks";
+        public string ImgurClientKey { get; set; }
         internal string FilePath { get; set; }
         internal string[] FilePaths {  get; private set; }
         internal bool IsSingleFile { get; private set; }

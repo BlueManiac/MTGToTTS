@@ -1,10 +1,12 @@
-﻿using System;
+﻿using System.Threading;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using DeckParser.BackImages;
 using DeckParser.FileParsers;
 using DeckParser.Models;
 using DeckParser.TabletopSimulator;
@@ -39,6 +41,7 @@ namespace DeckParser
                     {
                         client.BaseAddress = new Uri("https://api.scryfall.com/");
                     });
+                    collection.RegisterBackImageResolvers();
 
                     collection.AddSingleton<DelverLensParser>();
                     collection.AddSingleton<CardParser>();
@@ -72,16 +75,17 @@ namespace DeckParser
                     var deck = new Deck {
                         FilePath = filePath,
                         Cards = parser.Parse(filePath),
-                        Name = Path.GetFileNameWithoutExtension(filePath)
+                        Name = Path.GetFileNameWithoutExtension(filePath),
+                        BackImageFilePath = RelatedImageResolver.Find(filePath)
                     };
-                    
+
                     Console.Write("Parsing {0}... ", deck.Name);
                     
                     // Parse and sort using scryfall
                     var cards = await cardParser.Parse(deck.Cards.Where(x => !x.Exclude));
 
                     // Save TTS deck file
-                    var resultFilePath = deckCreator.SaveDeckFile(deck, cards);
+                    var resultFilePath = await deckCreator.SaveDeckFile(deck, cards);
                     
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("OK");
@@ -102,4 +106,5 @@ namespace DeckParser
             Console.ReadKey();
         }
     }
+    
 }

@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Collections;
 using System.Text;
 using System;
 using System.Collections.Generic;
@@ -9,19 +11,31 @@ using System.Threading.Tasks;
 using DeckParser.Models;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using DeckParser.BackImages;
 
 namespace DeckParser.TabletopSimulator {
     public class DeckCreator {
-        private readonly Options options;
+        private readonly Options _options;
+        private readonly IEnumerable<IBackImageResolver> _backImageResolvers;
 
-        public DeckCreator(Options options)
+        public DeckCreator(Options options, IEnumerable<IBackImageResolver> backImageResolvers)
         {
-            this.options = options;
+            _options = options;
+            _backImageResolvers = backImageResolvers;
         }
 
-        public string SaveDeckFile(Deck deck, IEnumerable<ScryfallApi.Client.Models.Card> cards)
+        public async Task<string> SaveDeckFile(Deck deck, IEnumerable<ScryfallApi.Client.Models.Card> cards)
         {
-            Directory.CreateDirectory(options.ResultPath);
+            var backUrl = _options.BackUrl;
+
+            if (deck.BackImageFilePath != null) {
+                foreach (var resover in _backImageResolvers)
+                {
+                    backUrl = await resover.Resolve(deck.BackImageFilePath, CancellationToken.None);
+                }
+            }
+
+            Directory.CreateDirectory(_options.ResultPath);
 
             var state = new SaveState {
                 ObjectStates = new System.Collections.Generic.List<ObjectState>() {
@@ -52,7 +66,7 @@ namespace DeckParser.TabletopSimulator {
                     : card.ImageUris["border_crop"].ToString();
 
                 for (int i = 0; i < quantity; i++) {
-                    AddCard(id, $"{card.Name} ({card.TypeLine})", faceUrl, options.BackUrl, true);
+                    AddCard(id, $"{card.Name} ({card.TypeLine})", faceUrl, backUrl, true);
                     
                     id += 100;
                 }
@@ -62,9 +76,9 @@ namespace DeckParser.TabletopSimulator {
             foreach (var card in cards.Where(x => x.ImageUris == null).DistinctBy(x => x.Id))
             {
                 var faceUrl = card.CardFaces[0].ImageUris["border_crop"].ToString();
-                var backUrl = card.CardFaces[1].ImageUris["border_crop"].ToString();
+                var doubleFacedbackUrl = card.CardFaces[1].ImageUris["border_crop"].ToString();
 
-                AddCard(id, $"{card.Name} [double faced]", faceUrl, backUrl, false);
+                AddCard(id, $"{card.Name} [double faced]", faceUrl, doubleFacedbackUrl, false);
                     
                 id += 100;
             }
@@ -75,7 +89,7 @@ namespace DeckParser.TabletopSimulator {
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
             });
 
-            var filePath = Path.Combine(options.ResultPath, deck.Name) + ".json";
+            var filePath = Path.Combine(_options.ResultPath, deck.Name) + ".json";
             File.WriteAllText(filePath, json);
 
             return filePath;
