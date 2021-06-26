@@ -10,25 +10,32 @@ namespace DeckParser
     {
         public string BackUrl { get; set; } = "https://loremflickr.com/480/680";
         public string ResultPath { get; set; } = @"%USERPROFILE%\Documents\My Games\Tabletop Simulator\Saves\Saved Objects\Imported";
+        public string ImportPath { get; set; } = "Decks";
         internal string FilePath { get; set; }
-        internal IEnumerable<string> FilePaths {  get; private set; }
-        internal string DelverLensFolder { get; set; } = "DelverLensDecks";
+        internal string[] FilePaths {  get; private set; }
+        internal bool IsSingleFile { get; private set; }
 
         public async Task Expand() {
             BackUrl = await WebUtil.ExpandUrl(BackUrl);
-            ResultPath = Environment.ExpandEnvironmentVariables(ResultPath);
-            FilePaths = FilePath != null
-                ? Enumerable.Empty<string>().Append(FilePath)
-                : GetFilePaths(DelverLensFolder);
+            ImportPath = ExpandPath(ImportPath);
+            ResultPath = ExpandPath(ResultPath);
             
-            static IEnumerable<string> GetFilePaths(string folder, string path = null) {
-                path = path ?? Directory.GetCurrentDirectory();
+            IsSingleFile = FilePath != null;
+            FilePaths = IsSingleFile
+                ? new [] { FilePath }
+                : GetFilePaths(ImportPath);
+            
+            static string ExpandPath(string path) {
+                return Path.GetFullPath(Environment.ExpandEnvironmentVariables(path ?? ""));
+            }
 
-                Directory.CreateDirectory(Path.Combine(path, folder));
+            static string[] GetFilePaths(string path) {
+                Directory.CreateDirectory(path);
 
                 return Directory
-                    .GetFiles(folder)
-                    .Select(x => Path.Combine(path, x));
+                    .GetFiles(path)
+                    .Select(x => Path.Combine(path, x))
+                    .ToArray();
             }
         }
     }

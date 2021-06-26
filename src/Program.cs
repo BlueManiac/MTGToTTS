@@ -21,12 +21,14 @@ namespace DeckParser
     {
         static async Task Main(string[] args)
         {
+            var optionsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "DeckParser.json");
+
             var host = Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(config => {
                     config.ClearProviders();
                 })
                 .ConfigureHostConfiguration(x => {
-                    x.AddJsonFile("DeckParser.json", optional: true);
+                    x.AddJsonFile(optionsFilePath, optional: true);
                 })
                 .ConfigureServices((context, collection) => {
                     collection.Configure<Options>(context.Configuration);
@@ -45,7 +47,6 @@ namespace DeckParser
                 .Build();
 
             var options = host.Services.GetService<Options>();
-            var optionsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "DeckParser.json");
 
             if (!File.Exists(optionsFilePath)) {
                 var json = JsonSerializer.Serialize(options, new JsonSerializerOptions {
@@ -61,6 +62,10 @@ namespace DeckParser
             var cardParser = host.Services.GetService<CardParser>();
             var deckCreator = host.Services.GetService<DeckCreator>();
 
+            if (options.FilePaths.Length == 0) {
+                Console.WriteLine($@"No deck files could be found in ""{options.ImportPath}"".");
+            }
+
             foreach (var filePath in options.FilePaths)
             {
                 try {
@@ -69,7 +74,7 @@ namespace DeckParser
                         Cards = parser.Parse(filePath),
                         Name = Path.GetFileNameWithoutExtension(filePath)
                     };
-
+                    
                     Console.Write("Parsing {0}... ", deck.Name);
                     
                     // Parse and sort using scryfall
@@ -86,7 +91,7 @@ namespace DeckParser
                 catch (Exception ex) {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.Error.WriteLine("ERROR");
-                    Console.WriteLine("Could not parse {0}.", filePath);
+                    Console.Error.WriteLine("Could not parse {0}.", filePath);
                     Console.Error.WriteLine(ex);
                     Console.ResetColor();
                 }

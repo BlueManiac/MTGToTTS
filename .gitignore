@@ -4,7 +4,8 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 dist/
-src/DelverLensDecks/
+src/Decks/
+src/Imported/
 src/DeckParser.json
 
 # User-specific files
