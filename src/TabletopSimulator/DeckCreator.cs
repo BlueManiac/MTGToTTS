@@ -33,7 +33,6 @@ namespace DeckParser.TabletopSimulator {
                 backUrl = await resolver.Resolve(deck.FilePath, CancellationToken.None);
 
                 if (backUrl != null) {
-                    Console.WriteLine("Resolver: " + resolver.GetType().Name);
                     break;
                 }
             }
