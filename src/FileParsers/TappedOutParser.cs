@@ -6,6 +6,11 @@ using CsvHelper.Configuration;
 
 namespace DeckParser.FileParsers {
     public class TappedOutParser : IDeckFileParser {
+        public bool IsValidFile(string filePath)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public IEnumerable<CardEntry> Parse(string filePath) {
             using (var reader = new StreamReader(filePath))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))

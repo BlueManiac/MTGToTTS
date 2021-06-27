@@ -72,6 +72,9 @@ namespace DeckParser
             foreach (var filePath in options.FilePaths)
             {
                 try {
+                    if (!parser.IsValidFile(filePath))
+                        continue;
+
                     var deck = new Deck {
                         FilePath = filePath,
                         Cards = parser.Parse(filePath),

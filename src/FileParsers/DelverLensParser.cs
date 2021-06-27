@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
@@ -9,6 +10,15 @@ namespace DeckParser.FileParsers
 {
     public class DelverLensParser : IDeckFileParser
     {
+        private static readonly string[] _extensions = new[] { string.Empty, ".csv" };
+
+        public bool IsValidFile(string filePath)
+        {
+            var extension = Path.GetExtension(filePath)?.ToLower();
+
+            return _extensions.Contains(extension);
+        }
+
         public IEnumerable<CardEntry> Parse(string filePath)
         {
             using (var reader = new StreamReader(filePath))
