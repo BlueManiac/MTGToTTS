@@ -59,7 +59,7 @@ namespace DeckParser
                 await File.WriteAllTextAsync(optionsFilePath, json);
             }
 
-            await options.Expand();
+            options.Expand();
             
             var parser = host.Services.GetService<DelverLensParser>();
             var cardParser = host.Services.GetService<CardParser>();
@@ -78,8 +78,7 @@ namespace DeckParser
                     var deck = new Deck {
                         FilePath = filePath,
                         Cards = parser.Parse(filePath),
-                        Name = Path.GetFileNameWithoutExtension(filePath),
-                        BackImageFilePath = RelatedImageResolver.Find(filePath)
+                        Name = Path.GetFileNameWithoutExtension(filePath)
                     };
 
                     Console.Write("Parsing {0}... ", deck.Name);

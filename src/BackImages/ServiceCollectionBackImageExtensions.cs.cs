@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices.ComTypes;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,9 +13,13 @@ namespace DeckParser.BackImages
             static IEnumerable<IBackImageResolver> Create(IServiceProvider services) {
                 var options = services.GetRequiredService<Options>();
 
+                yield return new UrlFileBackImageResolver();
+
                 if (!string.IsNullOrWhiteSpace(options.ImgurClientKey)) {
                     yield return new ImgurBackImageResolver(options.ImgurClientKey);
                 }
+
+                yield return new BackUrlBackImageResolver(options.BackUrl);
             }
         }
     }

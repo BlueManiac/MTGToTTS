@@ -16,8 +16,7 @@ namespace DeckParser
         internal string[] FilePaths {  get; private set; }
         internal bool IsSingleFile { get; private set; }
 
-        public async Task Expand() {
-            BackUrl = await WebUtil.ExpandUrl(BackUrl);
+        public void Expand() {
             ImportPath = ExpandPath(ImportPath);
             ResultPath = ExpandPath(ResultPath);
             

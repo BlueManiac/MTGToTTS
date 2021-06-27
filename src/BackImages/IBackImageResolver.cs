@@ -5,6 +5,6 @@ namespace DeckParser.BackImages
 {
     public interface IBackImageResolver
     {
-        Task<string> Resolve(string imageFilePath, CancellationToken cancellationToken);
+        Task<string> Resolve(string deckFilePath, CancellationToken cancellationToken);
     }
 }

@@ -26,13 +26,20 @@ namespace DeckParser.TabletopSimulator {
 
         public async Task<string> SaveDeckFile(Deck deck, IEnumerable<ScryfallApi.Client.Models.Card> cards)
         {
-            var backUrl = _options.BackUrl;
+            string backUrl = null;
 
-            if (deck.BackImageFilePath != null) {
-                foreach (var resover in _backImageResolvers)
-                {
-                    backUrl = await resover.Resolve(deck.BackImageFilePath, CancellationToken.None);
+            foreach (var resolver in _backImageResolvers)
+            {
+                backUrl = await resolver.Resolve(deck.FilePath, CancellationToken.None);
+
+                if (backUrl != null) {
+                    Console.WriteLine("Resolver: " + resolver.GetType().Name);
+                    break;
                 }
+            }
+
+            if (backUrl == null) {
+                throw new Exception($@"Could not create a back image for ""{deck.FilePath}"".");
             }
 
             Directory.CreateDirectory(_options.ResultPath);

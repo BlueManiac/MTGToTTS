@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Imgur.API.Authentication;
 using Imgur.API.Endpoints;
-using Imgur.API.Models;
 using System.IO;
 
 namespace DeckParser.BackImages
@@ -20,13 +19,25 @@ namespace DeckParser.BackImages
             _imageEndpoint = new ImageEndpoint(apiClient, httpClient);
         }
 
-        public async Task<string> Resolve(string imageFilePath, CancellationToken cancellationToken)
+        public async Task<string> Resolve(string deckFilePath, CancellationToken cancellationToken)
         {
+            var imageFilePath = RelatedImageResolver.Find(deckFilePath);
+
+            if (imageFilePath == null) {
+                return null;
+            }
+
             using var fileStream = File.OpenRead(imageFilePath);
 
             var imageUpload = await _imageEndpoint.UploadImageAsync(fileStream);
+            var link = imageUpload.Link;
 
-            return imageUpload.Link;
+            var urlFilePath = Path.ChangeExtension(deckFilePath, ".url");
+
+            // Cache imgur location for next invocation
+            await File.WriteAllTextAsync(urlFilePath, link);
+
+            return link;
         }
     }
 }
