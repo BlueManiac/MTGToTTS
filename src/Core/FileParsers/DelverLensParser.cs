@@ -23,29 +23,29 @@ public class DelverLensParser : IDeckFileParser
 
         foreach (var line in lines)
         {
-            var quantity = GetColumn(line, "QuantityX", "count")?.Replace("x", "") ?? throw new Exception("Invalid quantity on line " + line.Index);
+            if (line is null)
+                throw new Exception("Invalid line");
+
+            var quantity = GetColumn(line, "QuantityX", "count").Replace("x", "");
 
             yield return new CardEntry
             {
-                Name = GetColumn(line, "Name", "name") ?? throw new Exception("Invalid name on line " + line.Index),
+                Name = GetColumn(line, "Name", "name"),
                 Quantity = int.Parse(quantity),
-                ScryfallId = GetColumn(line, "Scryfall ID", "scryfall_id") ?? throw new Exception("Invalid scryfall id on line " + line.Index),
-                Exclude = GetColumn(line, "section") == "maybeboard"
+                ScryfallId = GetColumn(line, "Scryfall ID", "scryfall_id"),
+                Exclude = line.HasColumn("section") && line["section"] == "maybeboard"
             };
         }
 
-        static string? GetColumn(ICsvLine? line, params string[] columns)
+        static string GetColumn(ICsvLine line, params string[] columns)
         {
-            if (line is null)
-                return null;
-
             foreach (var column in columns)
             {
                 if (line.HasColumn(column))
                     return line[column];
             }
 
-            return null;
+            throw new Exception($"Could not read any of the columns {string.Join(", ", columns)} from line {line.Index}.");
         }
     }
 }
