@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace DeckParser.BackImages
+namespace Core.BackImages
 {
     public class UrlFileBackImageResolver : IBackImageResolver
     {
@@ -10,7 +10,8 @@ namespace DeckParser.BackImages
         {
             var urlFilePath = Path.ChangeExtension(deckFilePath, ".url");
 
-            if (!File.Exists(urlFilePath)) {
+            if (!File.Exists(urlFilePath))
+            {
                 return null;
             }
 

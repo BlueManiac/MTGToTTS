@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using DeckParser.FileParsers;
-using DeckParser.Models;
+using Core.FileParsers;
+using Core.Models;
 using ScryfallApi.Client;
 using static ScryfallApi.Client.Models.SearchOptions;
 

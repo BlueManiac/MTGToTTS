@@ -5,7 +5,7 @@ using Imgur.API.Authentication;
 using Imgur.API.Endpoints;
 using System.IO;
 
-namespace DeckParser.BackImages
+namespace Core.BackImages
 {
     public class ImgurBackImageResolver : IBackImageResolver
     {
@@ -15,7 +15,7 @@ namespace DeckParser.BackImages
         {
             var apiClient = new ApiClient(imgurClientKey);
             var httpClient = new HttpClient();
-            
+
             _imageEndpoint = new ImageEndpoint(apiClient, httpClient);
         }
 
@@ -23,7 +23,8 @@ namespace DeckParser.BackImages
         {
             var imageFilePath = RelatedImageResolver.Find(deckFilePath);
 
-            if (imageFilePath == null) {
+            if (imageFilePath == null)
+            {
                 return null;
             }
 

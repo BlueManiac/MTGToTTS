@@ -6,7 +6,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
-namespace DeckParser.FileParsers
+namespace Core.FileParsers
 {
     public class DelverLensParser : IDeckFileParser
     {
@@ -25,7 +25,7 @@ namespace DeckParser.FileParsers
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 //csv.Configuration.Delimiter = "\t";
-                csv.Configuration.RegisterClassMap<Map>();
+                csv.Context.RegisterClassMap<Map>();
 
                 var records = csv.GetRecords<CardEntry>();
 
@@ -47,14 +47,18 @@ namespace DeckParser.FileParsers
             }
         }
 
-        private class QuantityConverter : TypeConverter {
-            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData) {
+        private class QuantityConverter : TypeConverter
+        {
+            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+            {
                 return int.Parse(text.Replace("x", ""));
             }
         }
 
-        private class ExcludeConverter : TypeConverter {
-            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData) {
+        private class ExcludeConverter : TypeConverter
+        {
+            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+            {
                 return text == "maybeboard";
             }
         }

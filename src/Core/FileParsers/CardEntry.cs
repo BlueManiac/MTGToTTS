@@ -1,4 +1,4 @@
-namespace DeckParser.FileParsers
+namespace Core.FileParsers
 {
     public class CardEntry
     {

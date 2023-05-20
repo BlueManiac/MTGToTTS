@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 
-namespace DeckParser.TabletopSimulator {
+namespace Core.TabletopSimulator
+{
     public class SaveState
     {
         public List<ObjectState> ObjectStates { get; set; }
     }
 
     public class ObjectState
-    { 
+    {
         public string Name { get; set; }
         public TransformState Transform { get; set; }
         public string Nickname { get; set; }
@@ -18,7 +19,7 @@ namespace DeckParser.TabletopSimulator {
     }
 
     public class TransformState
-    {   
+    {
         public int? posX { get; set; }
         public int? posY { get; set; }
         public int? posZ { get; set; }

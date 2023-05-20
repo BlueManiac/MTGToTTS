@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DeckParser.BackImages
+namespace Core.BackImages
 {
     public class BackUrlBackImageResolver : IBackImageResolver
     {

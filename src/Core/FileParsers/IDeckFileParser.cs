@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DeckParser.FileParsers
+namespace Core.FileParsers
 {
     public interface IDeckFileParser
     {

@@ -1,4 +1,4 @@
-dotnet publish ./src/DeckParser.csproj `
+dotnet publish ./src/Console/Console.csproj `
 	-r win-x64 `
 	-c Release `
 	-o "dist" `

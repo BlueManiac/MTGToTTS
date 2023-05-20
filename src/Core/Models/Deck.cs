@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using DeckParser.FileParsers;
+using Core.FileParsers;
 
-namespace DeckParser.Models
+namespace Core.Models
 {
     public class Deck
     {

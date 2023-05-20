@@ -8,17 +8,20 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using DeckParser.Models;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
-using DeckParser.BackImages;
+using Core;
+using Core.Models;
+using Core.BackImages;
 
-namespace DeckParser.TabletopSimulator {
-    public class DeckCreator {
-        private readonly Options _options;
+namespace Core.TabletopSimulator
+{
+    public class DeckCreator
+    {
+        private readonly ParserConfig _options;
         private readonly IEnumerable<IBackImageResolver> _backImageResolvers;
 
-        public DeckCreator(Options options, IEnumerable<IBackImageResolver> backImageResolvers)
+        public DeckCreator(ParserConfig options, IEnumerable<IBackImageResolver> backImageResolvers)
         {
             _options = options;
             _backImageResolvers = backImageResolvers;
@@ -32,19 +35,22 @@ namespace DeckParser.TabletopSimulator {
             {
                 backUrl = await resolver.Resolve(deck.FilePath, CancellationToken.None);
 
-                if (backUrl != null) {
+                if (backUrl != null)
+                {
                     break;
                 }
             }
 
-            if (backUrl == null) {
+            if (backUrl == null)
+            {
                 throw new Exception($@"Could not create a back image for ""{deck.FilePath}"".");
             }
 
             Directory.CreateDirectory(_options.ResultPath);
 
-            var state = new SaveState {
-                ObjectStates = new System.Collections.Generic.List<ObjectState>() {
+            var state = new SaveState
+            {
+                ObjectStates = new List<ObjectState>() {
                     new ObjectState {
                         Name = "DeckCustom",
                         Nickname = deck.Name,
@@ -58,8 +64,8 @@ namespace DeckParser.TabletopSimulator {
                 }
             };
 
-            var objects = state.ObjectStates[0].ContainedObjects = new System.Collections.Generic.List<ObjectState>();
-            var customDeck = state.ObjectStates[0].CustomDeck = new System.Collections.Generic.Dictionary<int, CustomDeckState>();
+            var objects = state.ObjectStates[0].ContainedObjects = new List<ObjectState>();
+            var customDeck = state.ObjectStates[0].CustomDeck = new Dictionary<int, CustomDeckState>();
             var deckIds = state.ObjectStates[0].DeckIDs = new List<int>();
 
             int id = 100;
@@ -71,9 +77,10 @@ namespace DeckParser.TabletopSimulator {
                     ? card.CardFaces[0].ImageUris["border_crop"].ToString()
                     : card.ImageUris["border_crop"].ToString();
 
-                for (int i = 0; i < quantity; i++) {
+                for (int i = 0; i < quantity; i++)
+                {
                     AddCard(id, $"{card.Name} ({card.TypeLine})", faceUrl, backUrl, true);
-                    
+
                     id += 100;
                 }
             }
@@ -85,11 +92,12 @@ namespace DeckParser.TabletopSimulator {
                 var doubleFacedbackUrl = card.CardFaces[1].ImageUris["border_crop"].ToString();
 
                 AddCard(id, $"{card.Name} [double faced]", faceUrl, doubleFacedbackUrl, false);
-                    
+
                 id += 100;
             }
 
-            var json = JsonSerializer.Serialize(state, new JsonSerializerOptions {
+            var json = JsonSerializer.Serialize(state, new JsonSerializerOptions
+            {
                 WriteIndented = true,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
@@ -100,12 +108,15 @@ namespace DeckParser.TabletopSimulator {
 
             return filePath;
 
-            void AddCard(int id, string nickName, string faceUrl, string backUrl, bool backIsHidden) {
-                objects.Add(new ObjectState {
+            void AddCard(int id, string nickName, string faceUrl, string backUrl, bool backIsHidden)
+            {
+                objects.Add(new ObjectState
+                {
                     CardID = id,
                     Name = "Card",
                     Nickname = nickName,
-                    Transform = new TransformState {
+                    Transform = new TransformState
+                    {
                         rotY = 180,
                         rotZ = 180,
                         scaleX = 1,
@@ -114,7 +125,8 @@ namespace DeckParser.TabletopSimulator {
                     }
                 });
 
-                customDeck[id/100] = new CustomDeckState {
+                customDeck[id / 100] = new CustomDeckState
+                {
                     FaceURL = faceUrl,
                     BackURL = backUrl,
                     NumHeight = 1,

@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DeckParser.FileParsers;
+using Core.FileParsers;
 using ScryfallApi.Client;
 
-namespace DeckParser
+namespace Core
 {
-    internal class CardParser
+    public class CardParser
     {
         private readonly ScryfallApiClient client;
 
@@ -47,7 +47,7 @@ namespace DeckParser
                     foreach (var item in result.Data)
                     {
                         yield return item;
-                    } 
+                    }
                 }
             }
         }
