@@ -4,46 +4,45 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Core
+namespace Core;
+
+public class ParserConfig
 {
-    public class ParserConfig
+    public string? FilePath { get; init; }
+    public string ResultPath { get; init; }
+    public string ImportPath { get; init; }
+    public string[] FilePaths { get; init; }
+    public string BackUrl { get; init; }
+    public string? ImgurClientKey { get; init; }
+
+    public bool IsSingleFile => FilePath is not null;
+
+    public ParserConfig(ParserFileConfig config, string? filePath = null)
     {
-        public string? FilePath { get; init; }
-        public string ResultPath { get; init; }
-        public string ImportPath { get; init; }
-        public string[] FilePaths { get; init; }
-        public string BackUrl { get; init; }
-        public string? ImgurClientKey { get; init; }
+        FilePath = filePath;
+        ImportPath = ExpandPath(config.ImportPath);
+        ResultPath = ExpandPath(config.ResultPath);
 
-        public bool IsSingleFile => FilePath is not null;
+        FilePaths = FilePath is not null
+            ? new[] { FilePath }
+            : GetFilePaths(ImportPath);
 
-        public ParserConfig(ParserFileConfig config, string? filePath = null)
+        BackUrl = config.BackUrl;
+        ImgurClientKey = config.ImgurClientKey;
+
+        static string ExpandPath(string path)
         {
-            FilePath = filePath;
-            ImportPath = ExpandPath(config.ImportPath);
-            ResultPath = ExpandPath(config.ResultPath);
+            return Path.GetFullPath(Environment.ExpandEnvironmentVariables(path ?? ""));
+        }
 
-            FilePaths = FilePath is not null
-                ? new[] { FilePath }
-                : GetFilePaths(ImportPath);
+        static string[] GetFilePaths(string path)
+        {
+            Directory.CreateDirectory(path);
 
-            BackUrl = config.BackUrl;
-            ImgurClientKey = config.ImgurClientKey;
-
-            static string ExpandPath(string path)
-            {
-                return Path.GetFullPath(Environment.ExpandEnvironmentVariables(path ?? ""));
-            }
-
-            static string[] GetFilePaths(string path)
-            {
-                Directory.CreateDirectory(path);
-
-                return Directory
-                    .GetFiles(path)
-                    .Select(x => Path.Combine(path, x))
-                    .ToArray();
-            }
+            return Directory
+                .GetFiles(path)
+                .Select(x => Path.Combine(path, x))
+                .ToArray();
         }
     }
 }

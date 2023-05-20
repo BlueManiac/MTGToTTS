@@ -6,61 +6,60 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
-namespace Core.FileParsers
+namespace Core.FileParsers;
+
+public class DelverLensParser : IDeckFileParser
 {
-    public class DelverLensParser : IDeckFileParser
+    private static readonly string[] _extensions = new[] { string.Empty, ".csv" };
+
+    public bool IsValidFile(string filePath)
     {
-        private static readonly string[] _extensions = new[] { string.Empty, ".csv" };
+        var extension = Path.GetExtension(filePath)?.ToLower();
 
-        public bool IsValidFile(string filePath)
+        return _extensions.Contains(extension);
+    }
+
+    public IEnumerable<CardEntry> Parse(string filePath)
+    {
+        using (var reader = new StreamReader(filePath))
+        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
         {
-            var extension = Path.GetExtension(filePath)?.ToLower();
+            //csv.Configuration.Delimiter = "\t";
+            csv.Context.RegisterClassMap<Map>();
 
-            return _extensions.Contains(extension);
-        }
+            var records = csv.GetRecords<CardEntry>();
 
-        public IEnumerable<CardEntry> Parse(string filePath)
-        {
-            using (var reader = new StreamReader(filePath))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            foreach (var card in records)
             {
-                //csv.Configuration.Delimiter = "\t";
-                csv.Context.RegisterClassMap<Map>();
-
-                var records = csv.GetRecords<CardEntry>();
-
-                foreach (var card in records)
-                {
-                    yield return card;
-                }
+                yield return card;
             }
         }
+    }
 
-        public class Map : ClassMap<CardEntry>
+    public class Map : ClassMap<CardEntry>
+    {
+        public Map()
         {
-            public Map()
-            {
-                Map(m => m.Name).Name("name", "Name");
-                Map(m => m.Quantity).Name("QuantityX", "count").TypeConverter<QuantityConverter>();
-                Map(m => m.ScryfallId).Name("Scryfall ID", "scryfall_id");
-                Map(m => m.Exclude).Name("section").Optional().TypeConverter<ExcludeConverter>();
-            }
+            Map(m => m.Name).Name("name", "Name");
+            Map(m => m.Quantity).Name("QuantityX", "count").TypeConverter<QuantityConverter>();
+            Map(m => m.ScryfallId).Name("Scryfall ID", "scryfall_id");
+            Map(m => m.Exclude).Name("section").Optional().TypeConverter<ExcludeConverter>();
         }
+    }
 
-        private class QuantityConverter : TypeConverter
+    private class QuantityConverter : TypeConverter
+    {
+        public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
         {
-            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
-            {
-                return int.Parse(text.Replace("x", ""));
-            }
+            return int.Parse(text.Replace("x", ""));
         }
+    }
 
-        private class ExcludeConverter : TypeConverter
+    private class ExcludeConverter : TypeConverter
+    {
+        public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
         {
-            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
-            {
-                return text == "maybeboard";
-            }
+            return text == "maybeboard";
         }
     }
 }

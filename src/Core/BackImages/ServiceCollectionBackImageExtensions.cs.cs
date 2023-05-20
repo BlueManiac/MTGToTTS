@@ -3,27 +3,26 @@ using System.Collections.Generic;
 using Core;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Core.BackImages
+namespace Core.BackImages;
+
+public static class ServiceCollectionBackImageExtensions
 {
-    public static class ServiceCollectionBackImageExtensions
+    public static IServiceCollection RegisterBackImageResolvers(this IServiceCollection collection)
     {
-        public static IServiceCollection RegisterBackImageResolvers(this IServiceCollection collection)
+        return collection.AddSingleton(Create);
+
+        static IEnumerable<IBackImageResolver> Create(IServiceProvider services)
         {
-            return collection.AddSingleton(Create);
+            var options = services.GetRequiredService<ParserConfig>();
 
-            static IEnumerable<IBackImageResolver> Create(IServiceProvider services)
+            yield return new UrlFileBackImageResolver();
+
+            if (!string.IsNullOrWhiteSpace(options.ImgurClientKey))
             {
-                var options = services.GetRequiredService<ParserConfig>();
-
-                yield return new UrlFileBackImageResolver();
-
-                if (!string.IsNullOrWhiteSpace(options.ImgurClientKey))
-                {
-                    yield return new ImgurBackImageResolver(options.ImgurClientKey);
-                }
-
-                yield return new BackUrlBackImageResolver(options.BackUrl);
+                yield return new ImgurBackImageResolver(options.ImgurClientKey);
             }
+
+            yield return new BackUrlBackImageResolver(options.BackUrl);
         }
     }
 }

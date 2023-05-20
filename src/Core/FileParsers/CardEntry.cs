@@ -1,10 +1,9 @@
-namespace Core.FileParsers
+namespace Core.FileParsers;
+
+public class CardEntry
 {
-    public class CardEntry
-    {
-        public int Quantity { get; set; }
-        public string Name { get; set; }
-        public string ScryfallId { get; set; }
-        public bool Exclude { get; set; }
-    }
+    public int Quantity { get; set; }
+    public string Name { get; set; }
+    public string ScryfallId { get; set; }
+    public bool Exclude { get; set; }
 }

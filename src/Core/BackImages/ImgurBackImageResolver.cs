@@ -5,40 +5,39 @@ using Imgur.API.Authentication;
 using Imgur.API.Endpoints;
 using System.IO;
 
-namespace Core.BackImages
+namespace Core.BackImages;
+
+public class ImgurBackImageResolver : IBackImageResolver
 {
-    public class ImgurBackImageResolver : IBackImageResolver
+    private readonly ImageEndpoint _imageEndpoint;
+
+    public ImgurBackImageResolver(string imgurClientKey)
     {
-        private readonly ImageEndpoint _imageEndpoint;
+        var apiClient = new ApiClient(imgurClientKey);
+        var httpClient = new HttpClient();
 
-        public ImgurBackImageResolver(string imgurClientKey)
+        _imageEndpoint = new ImageEndpoint(apiClient, httpClient);
+    }
+
+    public async Task<string> Resolve(string deckFilePath, CancellationToken cancellationToken)
+    {
+        var imageFilePath = RelatedImageResolver.Find(deckFilePath);
+
+        if (imageFilePath == null)
         {
-            var apiClient = new ApiClient(imgurClientKey);
-            var httpClient = new HttpClient();
-
-            _imageEndpoint = new ImageEndpoint(apiClient, httpClient);
+            return null;
         }
 
-        public async Task<string> Resolve(string deckFilePath, CancellationToken cancellationToken)
-        {
-            var imageFilePath = RelatedImageResolver.Find(deckFilePath);
+        using var fileStream = File.OpenRead(imageFilePath);
 
-            if (imageFilePath == null)
-            {
-                return null;
-            }
+        var imageUpload = await _imageEndpoint.UploadImageAsync(fileStream);
+        var link = imageUpload.Link;
 
-            using var fileStream = File.OpenRead(imageFilePath);
+        var urlFilePath = Path.ChangeExtension(deckFilePath, ".url");
 
-            var imageUpload = await _imageEndpoint.UploadImageAsync(fileStream);
-            var link = imageUpload.Link;
+        // Cache imgur location for next invocation
+        await File.WriteAllTextAsync(urlFilePath, link);
 
-            var urlFilePath = Path.ChangeExtension(deckFilePath, ".url");
-
-            // Cache imgur location for next invocation
-            await File.WriteAllTextAsync(urlFilePath, link);
-
-            return link;
-        }
+        return link;
     }
 }
