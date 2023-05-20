@@ -1,7 +1,4 @@
-using System.Globalization;
-using CsvHelper;
-using CsvHelper.Configuration;
-using CsvHelper.TypeConversion;
+using Csv;
 
 namespace Core.FileParsers;
 
@@ -18,45 +15,37 @@ public class DelverLensParser : IDeckFileParser
 
     public IEnumerable<CardEntry> Parse(string filePath)
     {
-        using (var reader = new StreamReader(filePath))
-        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+        var options = new CsvOptions();
+
+        using var stream = File.OpenRead(filePath);
+        
+        var lines = CsvReader.ReadFromStream(stream, options);
+
+        foreach (var line in lines)
         {
-            //csv.Configuration.Delimiter = "\t";
-            csv.Context.RegisterClassMap<Map>();
+            var quantity = GetColumn(line, "QuantityX", "count")?.Replace("x", "") ?? throw new Exception("Invalid quantity on line " + line.Index);
 
-            var records = csv.GetRecords<CardEntry>();
-
-            foreach (var card in records)
+            yield return new CardEntry
             {
-                yield return card;
+                Name = GetColumn(line, "Name", "name") ?? throw new Exception("Invalid name on line " + line.Index),
+                Quantity = int.Parse(quantity),
+                ScryfallId = GetColumn(line, "Scryfall ID", "scryfall_id") ?? throw new Exception("Invalid scryfall id on line " + line.Index),
+                Exclude = GetColumn(line, "section") == "maybeboard"
+            };
+        }
+
+        static string? GetColumn(ICsvLine? line, params string[] columns)
+        {
+            if (line is null)
+                return null;
+
+            foreach (var column in columns)
+            {
+                if (line.HasColumn(column))
+                    return line[column];
             }
-        }
-    }
 
-    public class Map : ClassMap<CardEntry>
-    {
-        public Map()
-        {
-            Map(m => m.Name).Name("name", "Name");
-            Map(m => m.Quantity).Name("QuantityX", "count").TypeConverter<QuantityConverter>();
-            Map(m => m.ScryfallId).Name("Scryfall ID", "scryfall_id");
-            Map(m => m.Exclude).Name("section").Optional().TypeConverter<ExcludeConverter>();
-        }
-    }
-
-    private class QuantityConverter : TypeConverter
-    {
-        public override object ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
-        {
-            return int.Parse(text.Replace("x", ""));
-        }
-    }
-
-    private class ExcludeConverter : TypeConverter
-    {
-        public override object ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
-        {
-            return text == "maybeboard";
+            return null;
         }
     }
 }
