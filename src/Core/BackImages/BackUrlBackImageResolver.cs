@@ -1,19 +1,18 @@
-using System.Threading;
-using System.Threading.Tasks;
+using Core.Util;
 
 namespace Core.BackImages;
 
 public class BackUrlBackImageResolver : IBackImageResolver
 {
-    public string _url { get; }
+    private readonly string _url;
 
     public BackUrlBackImageResolver(string url)
     {
         _url = url;
     }
 
-    public Task<string> Resolve(string deckFilePath, CancellationToken cancellationToken)
+    public Task<string?> Resolve(string deckFilePath, CancellationToken cancellationToken)
     {
-        return WebUtil.ExpandUrl(_url);
+        return WebUtil.ExpandUrl(_url)!;
     }
 }

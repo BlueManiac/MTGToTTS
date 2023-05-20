@@ -1,8 +1,8 @@
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 
-public static class WebUtil
+namespace Core.Util;
+
+internal static class WebUtil
 {
     public static async Task<string> ExpandUrl(string url)
     {
@@ -11,10 +11,11 @@ public static class WebUtil
         using var request = new HttpRequestMessage(HttpMethod.Head, url);
         using var response = await httpClient.SendAsync(request);
 
-        if (IsRedirected(response)) {
+        if (IsRedirected(response))
+        {
             var uri = request.RequestUri;
 
-            return $"{uri.Scheme}://{uri.Host}{response.Headers.Location.ToString()}";
+            return $"{uri.Scheme}://{uri.Host}{response.Headers.Location}";
         }
 
         return url;

@@ -1,12 +1,8 @@
-using System.Threading;
-using System.Threading.Tasks;
-using System.IO;
-
 namespace Core.BackImages;
 
 public class UrlFileBackImageResolver : IBackImageResolver
 {
-    public async Task<string> Resolve(string deckFilePath, CancellationToken cancellationToken)
+    public async Task<string?> Resolve(string deckFilePath, CancellationToken cancellationToken)
     {
         var urlFilePath = Path.ChangeExtension(deckFilePath, ".url");
 
@@ -15,6 +11,6 @@ public class UrlFileBackImageResolver : IBackImageResolver
             return null;
         }
 
-        return await File.ReadAllTextAsync(urlFilePath);
+        return await File.ReadAllTextAsync(urlFilePath, cancellationToken);
     }
 }

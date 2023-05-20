@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
@@ -49,7 +46,7 @@ public class DelverLensParser : IDeckFileParser
 
     private class QuantityConverter : TypeConverter
     {
-        public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+        public override object ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
         {
             return int.Parse(text.Replace("x", ""));
         }
@@ -57,7 +54,7 @@ public class DelverLensParser : IDeckFileParser
 
     private class ExcludeConverter : TypeConverter
     {
-        public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+        public override object ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
         {
             return text == "maybeboard";
         }

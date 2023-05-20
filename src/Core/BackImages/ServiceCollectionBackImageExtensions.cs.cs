@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Core;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.BackImages;

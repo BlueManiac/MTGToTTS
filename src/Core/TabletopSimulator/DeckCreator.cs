@@ -1,18 +1,10 @@
-using System.Threading;
-using System.Collections;
-using System.Text;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
-using Core;
 using Core.Models;
 using Core.BackImages;
+using Core.Util;
 
 namespace Core.TabletopSimulator;
 
@@ -29,7 +21,7 @@ public class DeckCreator
 
     public async Task<string> SaveDeckFile(Deck deck, IEnumerable<ScryfallApi.Client.Models.Card> cards)
     {
-        string backUrl = null;
+        string? backUrl = null;
 
         foreach (var resolver in _backImageResolvers)
         {

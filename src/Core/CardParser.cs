@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Core.FileParsers;
 using ScryfallApi.Client;
 
@@ -40,7 +37,7 @@ public class CardParser
 
         async IAsyncEnumerable<ScryfallApi.Client.Models.Card> ParseInnerAsync(IEnumerable<CardEntry> cards)
         {
-            foreach (var chunk in cards.Split(75))
+            foreach (var chunk in cards.Chunk(75))
             {
                 var result = await client.Cards.Collection(chunk.Select(x => x.ScryfallId));
 

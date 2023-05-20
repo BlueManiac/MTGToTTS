@@ -1,9 +1,6 @@
-using System.Threading;
-using System.Net.Http;
-using System.Threading.Tasks;
+using Core.Util;
 using Imgur.API.Authentication;
 using Imgur.API.Endpoints;
-using System.IO;
 
 namespace Core.BackImages;
 
@@ -19,7 +16,7 @@ public class ImgurBackImageResolver : IBackImageResolver
         _imageEndpoint = new ImageEndpoint(apiClient, httpClient);
     }
 
-    public async Task<string> Resolve(string deckFilePath, CancellationToken cancellationToken)
+    public async Task<string?> Resolve(string deckFilePath, CancellationToken cancellationToken)
     {
         var imageFilePath = RelatedImageResolver.Find(deckFilePath);
 
@@ -36,7 +33,7 @@ public class ImgurBackImageResolver : IBackImageResolver
         var urlFilePath = Path.ChangeExtension(deckFilePath, ".url");
 
         // Cache imgur location for next invocation
-        await File.WriteAllTextAsync(urlFilePath, link);
+        await File.WriteAllTextAsync(urlFilePath, link, cancellationToken);
 
         return link;
     }
