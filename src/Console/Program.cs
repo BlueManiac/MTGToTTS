@@ -10,7 +10,7 @@ using ScryfallApi.Client;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Configuration.AddJsonFile(ParserFileConfig.File_NAME, optional: true);
+builder.Configuration.AddJsonFile(ParserFileConfig.FILENAME, optional: true);
 
 var fileConfig = builder.Configuration.Get<ParserFileConfig>()!;
 

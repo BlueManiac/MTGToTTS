@@ -1,5 +1,6 @@
 using Core.FileParsers;
 using ScryfallApi.Client;
+using ScryfallApi.Client.Models;
 
 namespace Core;
 
@@ -12,7 +13,7 @@ public class CardParser
         this.client = client;
     }
 
-    public async Task<IEnumerable<ScryfallApi.Client.Models.Card>> Parse(IEnumerable<CardEntry> cards)
+    public async Task<IEnumerable<Card>> Parse(IEnumerable<CardEntry> cards)
     {
         var list = await ParseInnerAsync(cards).ToListAsync();
 
@@ -35,7 +36,7 @@ public class CardParser
             .Concat(lands)
             .Reverse();
 
-        async IAsyncEnumerable<ScryfallApi.Client.Models.Card> ParseInnerAsync(IEnumerable<CardEntry> cards)
+        async IAsyncEnumerable<Card> ParseInnerAsync(IEnumerable<CardEntry> cards)
         {
             foreach (var chunk in cards.Chunk(75))
             {

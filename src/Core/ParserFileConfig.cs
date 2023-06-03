@@ -3,7 +3,7 @@
 namespace Core;
 public class ParserFileConfig
 {
-    public const string File_NAME = "DeckParser.json";
+    public const string FILENAME = "DeckParser.json";
 
     public string ResultPath { get; set; } = @"%USERPROFILE%\Documents\My Games\Tabletop Simulator\Saves\Saved Objects\Imported";
     public string ImportPath { get; set; } = "Decks";
@@ -12,7 +12,7 @@ public class ParserFileConfig
 
     public async Task CreateFile()
     {
-        if (File.Exists(File_NAME))
+        if (File.Exists(FILENAME))
             return;
 
         var json = JsonSerializer.Serialize(this, new JsonSerializerOptions
@@ -20,6 +20,6 @@ public class ParserFileConfig
             WriteIndented = true,
         });
 
-        await File.WriteAllTextAsync(File_NAME, json);
+        await File.WriteAllTextAsync(FILENAME, json);
     }
 }

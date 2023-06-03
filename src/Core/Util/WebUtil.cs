@@ -15,6 +15,9 @@ internal static class WebUtil
         {
             var uri = request.RequestUri;
 
+            if (uri is null)
+                return url;
+
             return $"{uri.Scheme}://{uri.Host}{response.Headers.Location}";
         }
 
