@@ -1,3 +1,4 @@
+using Core.BackImages.Resolvers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.BackImages;

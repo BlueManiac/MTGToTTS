@@ -1,3 +1,5 @@
+using Core.CardFileFormatParsers;
+using Core.CardFileFormatParsers.Models;
 using Csv;
 
 namespace Core.FileParsers;

@@ -1,17 +1,17 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Core.Models;
-using Core.BackImages;
 using Core.Scryfall.Models;
+using Core.Parser.Models;
+using Core.BackImages;
 
 namespace Core.TabletopSimulator;
 
-public class DeckCreator
+public class TabletopSimulatorDeckCreator
 {
     private readonly ParserConfig _options;
     private readonly IEnumerable<IBackImageResolver> _backImageResolvers;
 
-    public DeckCreator(ParserConfig options, IEnumerable<IBackImageResolver> backImageResolvers)
+    public TabletopSimulatorDeckCreator(ParserConfig options, IEnumerable<IBackImageResolver> backImageResolvers)
     {
         _options = options;
         _backImageResolvers = backImageResolvers;

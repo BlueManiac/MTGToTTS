@@ -1,7 +1,8 @@
 ﻿using Core;
 using Core.BackImages;
 using Core.FileParsers;
-using Core.Models;
+using Core.Parser;
+using Core.Parser.Models;
 using Core.Scryfall;
 using Core.TabletopSimulator;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +21,7 @@ builder.Services.AddScryfallApiClient();
 builder.Services.AddSingleton<CardParser>();
 builder.Services.AddSingleton<DelverLensParser>();
 builder.Services.RegisterBackImageResolvers();
-builder.Services.AddSingleton<DeckCreator>();
+builder.Services.AddSingleton<TabletopSimulatorDeckCreator>();
 
 var host = builder.Build();
 
@@ -36,7 +37,7 @@ else
 {
     var parser = host.Services.GetRequiredService<DelverLensParser>();
     var cardParser = host.Services.GetRequiredService<CardParser>();
-    var deckCreator = host.Services.GetRequiredService<DeckCreator>();
+    var deckCreator = host.Services.GetRequiredService<TabletopSimulatorDeckCreator>();
 
     foreach (var filePath in options.FilePaths)
     {

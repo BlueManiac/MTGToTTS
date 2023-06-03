@@ -1,8 +1,8 @@
-using Core.FileParsers;
+using Core.CardFileFormatParsers.Models;
 using Core.Scryfall;
 using Core.Scryfall.Models;
 
-namespace Core;
+namespace Core.Parser;
 
 public class CardParser
 {

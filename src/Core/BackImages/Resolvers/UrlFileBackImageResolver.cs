@@ -1,4 +1,4 @@
-namespace Core.BackImages;
+namespace Core.BackImages.Resolvers;
 
 public class UrlFileBackImageResolver : IBackImageResolver
 {

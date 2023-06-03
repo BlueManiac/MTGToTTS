@@ -1,4 +1,6 @@
-namespace Core.FileParsers;
+using Core.CardFileFormatParsers.Models;
+
+namespace Core.CardFileFormatParsers;
 
 public interface IDeckFileParser
 {

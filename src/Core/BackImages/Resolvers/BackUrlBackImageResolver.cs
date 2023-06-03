@@ -1,6 +1,6 @@
 using Core.Util;
 
-namespace Core.BackImages;
+namespace Core.BackImages.Resolvers;
 
 public class BackUrlBackImageResolver : IBackImageResolver
 {

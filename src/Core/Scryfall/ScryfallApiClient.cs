@@ -25,10 +25,11 @@ public class ScryfallApiClient
         var jsonStream = await response.Content.ReadAsStreamAsync();
         var obj = await JsonSerializer.DeserializeAsync(jsonStream, ScryfallSourceGenerationContext.Default.ResultListCard);
 
-        if (obj.ObjectType.Equals("error", StringComparison.OrdinalIgnoreCase))
+        if (obj!.ObjectType.Equals("error", StringComparison.OrdinalIgnoreCase))
         {
             jsonStream.Position = 0;
             var error = await JsonSerializer.DeserializeAsync(jsonStream, ScryfallSourceGenerationContext.Default.Error);
+            
             throw new ScryfallApiException(error?.Details)
             {
                 ResponseStatusCode = response.StatusCode,

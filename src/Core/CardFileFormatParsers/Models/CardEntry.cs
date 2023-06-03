@@ -1,4 +1,4 @@
-namespace Core.FileParsers;
+namespace Core.CardFileFormatParsers.Models;
 
 public class CardEntry
 {

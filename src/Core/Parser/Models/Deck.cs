@@ -1,6 +1,6 @@
-using Core.FileParsers;
+using Core.CardFileFormatParsers.Models;
 
-namespace Core.Models;
+namespace Core.Parser.Models;
 
 public class Deck
 {

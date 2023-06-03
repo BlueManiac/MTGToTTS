@@ -2,7 +2,7 @@ using Core.Util;
 using Imgur.API.Authentication;
 using Imgur.API.Endpoints;
 
-namespace Core.BackImages;
+namespace Core.BackImages.Resolvers;
 
 public class ImgurBackImageResolver : IBackImageResolver
 {
@@ -27,7 +27,7 @@ public class ImgurBackImageResolver : IBackImageResolver
 
         using var fileStream = File.OpenRead(imageFilePath);
 
-        var imageUpload = await _imageEndpoint.UploadImageAsync(fileStream);
+        var imageUpload = await _imageEndpoint.UploadImageAsync(fileStream, cancellationToken: cancellationToken);
         var link = imageUpload.Link;
 
         var urlFilePath = Path.ChangeExtension(deckFilePath, ".url");

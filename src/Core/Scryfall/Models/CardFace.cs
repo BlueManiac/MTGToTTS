@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 
-
 namespace Core.Scryfall.Models;
 
 public class CardFace : BaseItem
