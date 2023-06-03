@@ -1,4 +1,0 @@
-[submodule "lib/Scryfall-API-Client"]
-	path = lib/Scryfall-API-Client
-	url = https://github.com/BlueManiac/Scryfall-API-Client
-	branch = add_collection_support

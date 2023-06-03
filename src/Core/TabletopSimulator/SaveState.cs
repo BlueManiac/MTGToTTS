@@ -2,14 +2,14 @@ namespace Core.TabletopSimulator;
 
 public class SaveState
 {
-    public required List<ObjectState> ObjectStates { get; set; }
+    public List<ObjectState> ObjectStates { get; set; }
 }
 
 public class ObjectState
 {
-    public required string Name { get; set; }
-    public required TransformState Transform { get; set; }
-    public required string Nickname { get; set; }
+    public string Name { get; set; }
+    public TransformState Transform { get; set; }
+    public string Nickname { get; set; }
     public int? CardID { get; set; }
     public List<int>? DeckIDs { get; set; }
     public Dictionary<int, CustomDeckState>? CustomDeck { get; set; }
@@ -35,8 +35,8 @@ public class TransformState
 
 public class CustomDeckState
 {
-    public required string FaceURL { get; set; }
-    public required string BackURL { get; set; }
+    public string FaceURL { get; set; }
+    public string BackURL { get; set; }
     public int NumHeight { get; set; }
     public int NumWidth { get; set; }
     public bool BackIsHidden { get; set; }

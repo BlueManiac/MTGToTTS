@@ -2,11 +2,11 @@
 using Core.BackImages;
 using Core.FileParsers;
 using Core.Models;
+using Core.Scryfall;
 using Core.TabletopSimulator;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ScryfallApi.Client;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -16,7 +16,7 @@ var fileConfig = builder.Configuration.Get<ParserFileConfig>()!;
 
 builder.Services.AddSingleton(x => new ParserConfig(fileConfig, args.FirstOrDefault()));
 
-builder.Services.AddHttpClient<ScryfallApiClient>(client => client.BaseAddress = new Uri("https://api.scryfall.com/"));
+builder.Services.AddScryfallApiClient();
 builder.Services.AddSingleton<CardParser>();
 builder.Services.AddSingleton<DelverLensParser>();
 builder.Services.RegisterBackImageResolvers();

@@ -11,11 +11,8 @@
     <PackageReference Include="Csv" Version="2.0.93" />
     <PackageReference Include="Imgur.API" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\lib\Scryfall-API-Client\src\ScryfallApi.Client\ScryfallApi.Client.csproj" />
   </ItemGroup>
 
 </Project>

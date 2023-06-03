@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Core;
 public class ParserFileConfig
@@ -15,11 +16,15 @@ public class ParserFileConfig
         if (File.Exists(FILENAME))
             return;
 
-        var json = JsonSerializer.Serialize(this, new JsonSerializerOptions
-        {
-            WriteIndented = true,
-        });
+        var json = JsonSerializer.Serialize(this, ConfigSourceGenerationContext.Default.ParserFileConfig);
 
         await File.WriteAllTextAsync(FILENAME, json);
     }
+}
+
+
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(ParserFileConfig))]
+internal partial class ConfigSourceGenerationContext : JsonSerializerContext
+{
 }

@@ -1,9 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
 using Core.Models;
 using Core.BackImages;
+using Core.Scryfall.Models;
 
 namespace Core.TabletopSimulator;
 
@@ -18,7 +17,7 @@ public class DeckCreator
         _backImageResolvers = backImageResolvers;
     }
 
-    public async Task<string> SaveDeckFile(Deck deck, IEnumerable<ScryfallApi.Client.Models.Card> cards)
+    public async Task<string> SaveDeckFile(Deck deck, IEnumerable<Card> cards)
     {
         string? backUrl = null;
 
@@ -87,12 +86,7 @@ public class DeckCreator
             id += 100;
         }
 
-        var json = JsonSerializer.Serialize(state, new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-        });
+        var json = JsonSerializer.Serialize(state, DeckSourceGenerationContext.Default.SaveState);
 
         var filePath = Path.Combine(_options.ResultPath, deck.Name) + ".json";
         File.WriteAllText(filePath, json);
@@ -128,4 +122,10 @@ public class DeckCreator
             deckIds.Add(id);
         }
     }
+}
+
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(SaveState))]
+internal partial class DeckSourceGenerationContext : JsonSerializerContext
+{
 }
