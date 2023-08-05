@@ -8,6 +8,7 @@ public class ParserConfig
     public string[] FilePaths { get; init; }
     public string BackUrl { get; init; }
     public string? ImgurClientKey { get; init; }
+    public bool CleanDeckNames { get; init; }
 
     public bool IsSingleFile => FilePath is not null;
 
@@ -23,6 +24,7 @@ public class ParserConfig
 
         BackUrl = config.BackUrl;
         ImgurClientKey = config.ImgurClientKey;
+        CleanDeckNames = config.CleanDeckNames;
 
         static string ExpandPath(string path)
         {

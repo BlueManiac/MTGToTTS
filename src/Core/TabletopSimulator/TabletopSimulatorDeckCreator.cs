@@ -3,10 +3,11 @@ using System.Text.Json.Serialization;
 using Core.Scryfall.Models;
 using Core.Parser.Models;
 using Core.BackImages;
+using System.Text.RegularExpressions;
 
 namespace Core.TabletopSimulator;
 
-public class TabletopSimulatorDeckCreator
+public partial class TabletopSimulatorDeckCreator
 {
     private readonly ParserConfig _options;
     private readonly IEnumerable<IBackImageResolver> _backImageResolvers;
@@ -88,8 +89,13 @@ public class TabletopSimulatorDeckCreator
 
         var json = JsonSerializer.Serialize(state, DeckSourceGenerationContext.Default.SaveState);
 
-        var filePath = Path.Combine(_options.ResultPath, deck.Name) + ".json";
-        File.WriteAllText(filePath, json);
+        var name = _options.CleanDeckNames
+            ? CleanDeckName(deck.Name)
+            : deck.Name;
+
+        var filePath = Path.Combine(_options.ResultPath, name) + ".json";
+
+        await File.WriteAllTextAsync(filePath, json);
 
         return filePath;
 
@@ -122,6 +128,21 @@ public class TabletopSimulatorDeckCreator
             deckIds.Add(id);
         }
     }
+
+    private static string CleanDeckName(string name)
+    {
+        var match = DeckNameRegex().Match(name);
+
+        if (match.Success)
+        {
+            name = match.Groups[1].Value;
+        }
+
+        return name.Replace("_", " ");
+    }
+
+    [GeneratedRegex("^(.*?)_(\\d{4}_\\w+_\\d{2}-\\d{2})$")]
+    private static partial Regex DeckNameRegex();
 }
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
