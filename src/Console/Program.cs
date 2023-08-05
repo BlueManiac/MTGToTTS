@@ -8,8 +8,14 @@ using Core.TabletopSimulator;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 var builder = Host.CreateApplicationBuilder(args);
+
+if (builder.Environment.IsProduction())
+{
+    builder.Logging.ClearProviders();
+}
 
 builder.Configuration.AddJsonFile(ParserFileConfig.FILENAME, optional: true);
 
