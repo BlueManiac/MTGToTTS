@@ -14,12 +14,9 @@ public class ParserFileConfig
 
     public async Task CreateFile()
     {
-        if (File.Exists(FILENAME))
-            return;
+        using var fileStream = File.Open(FILENAME, FileMode.Create, FileAccess.Write);
 
-        var json = JsonSerializer.Serialize(this, ConfigSourceGenerationContext.Default.ParserFileConfig);
-
-        await File.WriteAllTextAsync(FILENAME, json);
+        await JsonSerializer.SerializeAsync(fileStream, this, ConfigSourceGenerationContext.Default.ParserFileConfig);
     }
 }
 
