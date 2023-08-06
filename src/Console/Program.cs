@@ -41,7 +41,7 @@ if (options.FilePaths.Length == 0)
 }
 else
 {
-    var parser = host.Services.GetRequiredService<DelverLensParser>();
+    var fileParser = host.Services.GetRequiredService<DelverLensParser>();
     var cardParser = host.Services.GetRequiredService<CardParser>();
     var deckCreator = host.Services.GetRequiredService<TabletopSimulatorDeckCreator>();
 
@@ -49,13 +49,13 @@ else
     {
         try
         {
-            if (!parser.IsValidFile(filePath))
+            if (!fileParser.IsValidFile(filePath))
                 continue;
 
             var deck = new Deck
             {
                 FilePath = filePath,
-                Cards = parser.Parse(filePath),
+                Cards = fileParser.Parse(filePath),
                 Name = Path.GetFileNameWithoutExtension(filePath)
             };
 
@@ -66,6 +66,9 @@ else
 
             // Save TTS deck file
             var resultFilePath = await deckCreator.SaveDeckFile(deck, cards);
+
+            // Move parsed deck file if needed
+            fileParser.MoveParsedFile(filePath);
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("OK");

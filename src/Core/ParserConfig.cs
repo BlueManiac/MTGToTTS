@@ -5,26 +5,32 @@ public class ParserConfig
     public string? FilePath { get; init; }
     public string ResultPath { get; init; }
     public string ImportPath { get; init; }
+    public string CompletedPath { get; init; }
     public string[] FilePaths { get; init; }
     public string BackUrl { get; init; }
-    public string? ImgurClientKey { get; init; }
     public bool CleanDeckNames { get; init; }
+    public bool MoveParsedFiles { get; init; }
+    public string? ImgurClientKey { get; init; }
 
     public bool IsSingleFile => FilePath is not null;
 
     public ParserConfig(ParserFileConfig config, string? filePath = null)
     {
         FilePath = filePath;
-        ImportPath = ExpandPath(config.ImportPath);
         ResultPath = ExpandPath(config.ResultPath);
+        ImportPath = ExpandPath(config.ImportPath);
+        CompletedPath = ExpandPath(config.CompletedPath);
 
         FilePaths = FilePath is not null
             ? new[] { FilePath }
             : GetFilePaths(ImportPath);
 
         BackUrl = config.BackUrl;
-        ImgurClientKey = config.ImgurClientKey;
         CleanDeckNames = config.CleanDeckNames;
+        MoveParsedFiles = config.MoveParsedFiles;
+        ImgurClientKey = !string.IsNullOrWhiteSpace(config.ImgurClientKey)
+            ? config.ImgurClientKey
+            : null;
 
         static string ExpandPath(string path)
         {

@@ -9,12 +9,12 @@ namespace Core.TabletopSimulator;
 
 public partial class TabletopSimulatorDeckCreator
 {
-    private readonly ParserConfig _options;
+    private readonly ParserConfig _config;
     private readonly IEnumerable<IBackImageResolver> _backImageResolvers;
 
-    public TabletopSimulatorDeckCreator(ParserConfig options, IEnumerable<IBackImageResolver> backImageResolvers)
+    public TabletopSimulatorDeckCreator(ParserConfig config, IEnumerable<IBackImageResolver> backImageResolvers)
     {
-        _options = options;
+        _config = config;
         _backImageResolvers = backImageResolvers;
     }
 
@@ -37,7 +37,7 @@ public partial class TabletopSimulatorDeckCreator
             throw new Exception($@"Could not create a back image for ""{deck.FilePath}"".");
         }
 
-        Directory.CreateDirectory(_options.ResultPath);
+        Directory.CreateDirectory(_config.ResultPath);
 
         var state = new SaveState
         {
@@ -87,15 +87,15 @@ public partial class TabletopSimulatorDeckCreator
             id += 100;
         }
 
-        var json = JsonSerializer.Serialize(state, DeckSourceGenerationContext.Default.SaveState);
-
-        var name = _options.CleanDeckNames
+        var name = _config.CleanDeckNames
             ? CleanDeckName(deck.Name)
             : deck.Name;
 
-        var filePath = Path.Combine(_options.ResultPath, name) + ".json";
+        var filePath = Path.Combine(_config.ResultPath, name) + ".json";
 
-        await File.WriteAllTextAsync(filePath, json);
+        using var fileStream = File.Create(filePath);
+
+        await JsonSerializer.SerializeAsync(fileStream, state, DeckSourceGenerationContext.Default.SaveState);
 
         return filePath;
 

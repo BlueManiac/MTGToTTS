@@ -8,6 +8,13 @@ public class DelverLensParser : IDeckFileParser
 {
     private static readonly string[] _extensions = new[] { string.Empty, ".csv" };
 
+    private readonly ParserConfig _config;
+
+    public DelverLensParser(ParserConfig config)
+    {
+        _config = config;
+    }
+
     public bool IsValidFile(string filePath)
     {
         var extension = Path.GetExtension(filePath)?.ToLower();
@@ -49,5 +56,19 @@ public class DelverLensParser : IDeckFileParser
 
             throw new Exception($"Could not read any of the columns {string.Join(", ", columns)} from line {line.Index}.");
         }
+    }
+
+    public bool MoveParsedFile(string filePath)
+    {
+        if (!_config.MoveParsedFiles)
+            return false;
+
+        Directory.CreateDirectory(_config.CompletedPath);
+
+        var destFilePath = Path.Combine(_config.CompletedPath, Path.GetFileName(filePath));
+
+        File.Move(filePath, destFilePath, true);
+
+        return true;
     }
 }
