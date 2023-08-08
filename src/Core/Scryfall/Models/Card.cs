@@ -262,6 +262,8 @@ public class Card : BaseItem
     [JsonPropertyName("purchase_uris")]
     public Dictionary<string, Uri> RetailerUris { get; set; }
 
+    public bool IsCommander { get; set; }
+
     #endregion Retail Fields
 
     public override string ToString() => Name +

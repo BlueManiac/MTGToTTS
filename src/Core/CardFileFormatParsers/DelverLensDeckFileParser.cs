@@ -35,7 +35,8 @@ public class DelverLensDeckFileParser : IDeckFileParser
                 Name = GetColumn(line, "Name", "name"),
                 Quantity = int.Parse(quantity),
                 ScryfallId = GetColumn(line, "Scryfall ID", "scryfall_id"),
-                Exclude = line.HasColumn("section") && line["section"] == "maybeboard"
+                Exclude = line.HasColumn("section") && line["section"] == "maybeboard",
+                IsCommander = line.HasColumn("Is Commander?") && line["Is Commander?"] == "Commander"
             };
         }
 

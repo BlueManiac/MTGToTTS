@@ -17,6 +17,10 @@ public class CardParser
     {
         var list = await ParseInnerAsync(cards).ToListAsync();
 
+        var commanders = list
+            .Where(x => x.IsCommander)
+            .OrderBy(x => x.TypeLine)
+            .ThenBy(x => x.Name);
         var legendaries = list
             .Where(x => x.TypeLine.StartsWith("Legendary Creature"))
             .OrderByDescending(x => x.ColorIdentity.Length)
@@ -31,7 +35,8 @@ public class CardParser
             .OrderBy(x => x.TypeLine)
             .ThenBy(x => x.Name);
 
-        return legendaries
+        return commanders
+            .Concat(legendaries)
             .Concat(rest)
             .Concat(lands)
             .Reverse();
@@ -44,6 +49,10 @@ public class CardParser
 
                 foreach (var item in result.Data)
                 {
+                    var scryfallId = item.Id.ToString();
+
+                    item.IsCommander = chunk.First(x => x.ScryfallId == scryfallId).IsCommander;
+
                     yield return item;
                 }
             }
