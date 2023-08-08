@@ -22,14 +22,17 @@ public class CardParser
             .OrderBy(x => x.TypeLine)
             .ThenBy(x => x.Name);
         var legendaries = list
+            .Except(commanders)
             .Where(x => x.TypeLine.StartsWith("Legendary Creature"))
             .OrderByDescending(x => x.ColorIdentity.Length)
             .ThenBy(x => x.Name);
         var lands = list
-            .Where(x => x.TypeLine.Split(" ").Contains("Land"))
+            .Except(commanders)
+            .Where(x => x.TypeLine.Split(" ").Contains("Land") && !x.IsCommander)
             .OrderBy(x => x.TypeLine.StartsWith("Basic Land") ? 0 : 1)
             .ThenBy(x => x.Name);
         var rest = list
+            .Except(commanders)
             .Except(legendaries)
             .Except(lands)
             .OrderBy(x => x.TypeLine)
