@@ -50,6 +50,12 @@ public class CardFace : BaseItem
     [JsonPropertyName("toughness")]
     public string Toughness { get; set; }
 
+    /// <summary>
+    /// This loyalty if any. Note that some cards have loyalties that are not numeric, such as X.
+    /// </summary>
+    [JsonPropertyName("loyalty")]
+    public string Loyalty { get; set; }
+
     [JsonPropertyName("flavor_text")]
     public string FlavorText { get; set; }
 

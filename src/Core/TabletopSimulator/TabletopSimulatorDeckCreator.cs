@@ -4,6 +4,7 @@ using Core.Scryfall.Models;
 using Core.Parser.Models;
 using Core.BackImages;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace Core.TabletopSimulator;
 
@@ -70,7 +71,7 @@ public partial class TabletopSimulatorDeckCreator
 
             for (int i = 0; i < quantity; i++)
             {
-                AddCard(id, $"{card.Name} ({card.TypeLine})", card.OracleText, faceUrl, backUrl, true);
+                AddCard(id, GetCardName(card), GetCardOracleText(card), faceUrl, backUrl, true);
 
                 id += 100;
             }
@@ -129,6 +130,91 @@ public partial class TabletopSimulatorDeckCreator
             deckIds.Add(id);
         }
     }
+    public static string GetCardName(Card cardData)
+    {
+        string name = (cardData.Name ?? "").Replace("\"", "");
+
+        if (!string.IsNullOrEmpty(cardData.TypeLine))
+        {
+            name += $"\n{cardData.TypeLine}";
+        }
+
+        if (cardData.ConvertedManaCost > 0)
+        {
+            name += $"\n{cardData.ConvertedManaCost:0.#} CMC";
+        }
+
+        return name + " ";
+    }
+
+
+    public static string GetCardOracleText(Card cardData)
+    {
+        var oracleText = "";
+
+        if (cardData.CardFaces != null)
+        {
+            for (int i = 0; i < cardData.CardFaces.Length; i++)
+            {
+                oracleText += Underline(cardData.CardFaces[i].Name);
+                oracleText += GetCardFaceOracleText(cardData.CardFaces[i]);
+
+                if (i < cardData.CardFaces.Length - 1)
+                {
+                    oracleText += "\n\n";
+                }
+            }
+        }
+        else
+        {
+            oracleText += GetCardOracleText(cardData);
+        }
+
+        return oracleText.ToString();
+
+        static string Underline(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return "";
+            }
+
+            return $"{str}\n{new string('-', str.Length)}\n";
+        }
+
+        static string GetCardFaceOracleText(CardFace cardData)
+        {
+            var oracleText = cardData.OracleText.Replace("\"", "'");
+
+            if (cardData.Power != null && cardData.Toughness != null)
+            {
+                oracleText += $"\n[b]{cardData.Power}/{cardData.Toughness}[/b]";
+            }
+            else if (cardData.Loyalty != null)
+            {
+                oracleText += $"\n[b]{cardData.Loyalty}[/b]";
+            }
+
+            return oracleText;
+        }
+
+        static string GetCardOracleText(Card cardData)
+        {
+            var oracleText = cardData.OracleText.Replace("\"", "'");
+
+            if (cardData.Power != null && cardData.Toughness != null)
+            {
+                oracleText += $"\n[b]{cardData.Power}/{cardData.Toughness}[/b]";
+            }
+            else if (cardData.Loyalty != null)
+            {
+                oracleText += $"\n[b]{cardData.Loyalty}[/b]";
+            }
+
+            return oracleText;
+        }
+    }
+
 
     private static string CleanDeckName(string name)
     {
@@ -146,7 +232,7 @@ public partial class TabletopSimulatorDeckCreator
     private static partial Regex DeckNameRegex();
 }
 
-[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSourceGenerationOptions(WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 [JsonSerializable(typeof(SaveState))]
 internal partial class DeckSourceGenerationContext : JsonSerializerContext
 {
