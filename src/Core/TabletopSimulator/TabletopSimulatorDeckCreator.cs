@@ -70,7 +70,7 @@ public partial class TabletopSimulatorDeckCreator
 
             for (int i = 0; i < quantity; i++)
             {
-                AddCard(id, $"{card.Name} ({card.TypeLine})", faceUrl, backUrl, true);
+                AddCard(id, $"{card.Name} ({card.TypeLine})", card.OracleText, faceUrl, backUrl, true);
 
                 id += 100;
             }
@@ -82,16 +82,16 @@ public partial class TabletopSimulatorDeckCreator
             var faceUrl = card.CardFaces[0].ImageUris["border_crop"].ToString();
             var doubleFacedbackUrl = card.CardFaces[1].ImageUris["border_crop"].ToString();
 
-            AddCard(id, $"{card.Name} [double faced]", faceUrl, doubleFacedbackUrl, false);
+            AddCard(id, $"{card.Name} [double faced]", card.OracleText, faceUrl, doubleFacedbackUrl, false);
 
             id += 100;
         }
 
-        var name = _config.CleanDeckNames
+        var deckName = _config.CleanDeckNames
             ? CleanDeckName(deck.Name)
             : deck.Name;
 
-        var filePath = Path.Combine(_config.ResultPath, name) + ".json";
+        var filePath = Path.Combine(_config.ResultPath, deckName) + ".json";
 
         using var fileStream = File.Create(filePath);
 
@@ -99,13 +99,14 @@ public partial class TabletopSimulatorDeckCreator
 
         return filePath;
 
-        void AddCard(int id, string nickName, string faceUrl, string backUrl, bool backIsHidden)
+        void AddCard(int id, string nickName, string description, string faceUrl, string backUrl, bool backIsHidden)
         {
             objects.Add(new ObjectState
             {
                 CardID = id,
                 Name = "Card",
                 Nickname = nickName,
+                Description = description,
                 Transform = new TransformState
                 {
                     rotY = 180,

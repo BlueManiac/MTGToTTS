@@ -10,6 +10,7 @@ public class ObjectState
     public string Name { get; set; }
     public TransformState Transform { get; set; }
     public string Nickname { get; set; }
+    public string Description { get; set; }
     public int? CardID { get; set; }
     public List<int>? DeckIDs { get; set; }
     public Dictionary<int, CustomDeckState>? CustomDeck { get; set; }
