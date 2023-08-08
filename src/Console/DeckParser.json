@@ -1,0 +1,9 @@
+{
+  "ResultPath": "../../../../../dist/Result",
+  "ImportPath": "../../../../../dist/Decks",
+  "CompletedPath": "../../../../../dist/Completed",
+  "BackUrl": "https://gamepedia.cursecdn.com/mtgsalvation_gamepedia/f/f8/Magic_card_back.jpg?version=0ddc8d41c3b69c2c3c4bb5d72669ffd7",
+  "CleanDeckNames": true,
+  "MoveParsedFiles": false,
+  "ImgurClientKey": ""
+}
