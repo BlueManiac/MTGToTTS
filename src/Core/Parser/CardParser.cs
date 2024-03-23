@@ -55,6 +55,7 @@ public class CardParser
                     var scryfallId = item.Id.ToString();
 
                     item.IsCommander = chunk.First(x => x.ScryfallId == scryfallId).IsCommander;
+                    item.TypeLine ??= item.CardFaces.FirstOrDefault()?.TypeLine ?? "";
 
                     yield return item;
                 }
